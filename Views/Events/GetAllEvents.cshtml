@@ -1,0 +1,63 @@
+﻿@model IEnumerable<PlaniEvents123.Models.Event>
+
+<div class="container">
+    <div class="row pt-4 pb-3">
+        <div class="col-6">
+            <h2 class="text-primary">Liste des Événements</h2>
+        </div>
+        @if (User.IsInRole("Admin") || User.IsInRole("Organizateur"))
+                        {
+        <div class="col-6 text-end">
+
+            <a class="btn btn-primary" asp-action="Create"><i class="bi bi-plus-circle"></i> Ajouter Un Événement</a>
+            
+
+        </div>
+                        }
+    </div>
+    
+    <div class="w-full d-flex flex-wrap flex-row gap-3 justify-content-center ">
+        @foreach (var item in Model)
+        {
+            
+                <div class="card" style="width: 20rem;">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Nom</h5>
+                    <h6 class="card-subtitle mb-2 text-body-secondary text-secondary">
+                        <i class="bi bi-calendar-event text-secondary"></i> @item.Jour
+                        </h6>
+                    <h6 class="card-subtitle mb-2 text-body-secondary text-secondary">
+                        <i class="bi bi-clock text-secondary"></i> @item.Temps
+                        </h6>
+
+                    <p class="card-text description">@item.Description</p>
+
+                        <p class="card-text"><i class="bi bi-geo-alt"></i> @item.Lieu</p>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Organizateur"))
+                    {
+                        <button type="button" class="btn btn-primary" asp-action="Edit" onclick="location.href='@Url.Action("Edit", new { id = item.EventId })'"><i class="bi bi-pencil-square"></i></button>
+                    }
+                    <button type="button" class="btn btn-dark" asp-action="Details" onclick="location.href='@Url.Action("Details", new { id = item.EventId })'"><i class="bi bi-eye"></i></button>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Organizateur"))
+                    {
+                        <button type="button" class="btn btn-danger" asp-action="Delete" onclick="location.href='@Url.Action("Delete", new { id = item.EventId })'"><i class="bi bi-trash"></i></button>
+                    }
+                    @if (User.IsInRole("Participant"))
+                    {
+                        <button type="button" class="btn btn-success" asp-action="Participate" onclick="location.href='@Url.Action("Participate", new { id = item.EventId })'">Participer</button>
+                    }
+                    </div>
+                </div>
+            
+        }
+    </div>
+</div>
+<style>
+    .description {
+        display: -webkit-box;
+        -webkit-line-clamp: 4; /* Number of lines to show */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis " [..]";
+    }
+</style>

@@ -1,0 +1,44 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+
+<form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+    <div class="mt-4">
+        <div class="row pb-2">
+            <h2 class="tet-primary">Inscription</h2>
+            <hr />
+        </div>
+    </div>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group mb-3 row">
+        <label asp-for="Input.Email" class="control-label"></label>
+        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" />
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3 row">
+        <label asp-for="Input.Password" class="control-label"></label>
+        <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" />
+        <span asp-validation-for="Input.Password" class="text-danger"></span>
+    </div>
+    <div class="form-group mb-3 row">
+        <label asp-for="Input.ConfirmPassword" class="control-label"></label>
+        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" />
+        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+    </div>
+    <div class="row">
+        <div class="form-group col-6 col-md-3">
+            <input id="registerSubmit" type="submit" value="Inscription" class="btn btn-primary form-control" />
+        </div>
+
+    </div>
+            
+        </form>
+
+    
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

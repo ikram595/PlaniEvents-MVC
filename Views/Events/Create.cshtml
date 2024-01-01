@@ -1,0 +1,56 @@
+﻿@model PlaniEvents123.Models.Event
+
+
+
+<form asp-action="Create">
+    <div class=" mt-4">
+        <div class="row pb-2">
+            <h2 class="tet-primary">Ajouter un nouvel événement</h2>
+        <hr/>
+        </div>
+    </div>
+    <div asp-validation-summary="ModelOnly"></div>
+    <div class="form-group mb-3 row">
+        <label asp-for="Nom" class="control-label"></label>
+        <input asp-for="Nom" class="form-control" />
+        <span asp-validation-for="Nom" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3 row">
+        <label asp-for="Description" class="control-label"></label>
+        <input asp-for="Description" class="form-control" />
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3 row">
+        <label asp-for="Jour" class="control-label"></label>
+        <input asp-for="Jour" class="form-control" />
+        <span asp-validation-for="Jour" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3 row">
+        <label asp-for="Temps" class="control-label"></label>
+        <input asp-for="Temps" class="form-control" />
+        <span asp-validation-for="Temps" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3 row">
+        <label asp-for="Lieu" class="control-label"></label>
+        <input asp-for="Lieu" class="form-control" />
+        <span asp-validation-for="Lieu" class="text-danger"></span>
+    </div>
+    <div class="row">
+        <div class="form-group col-6 col-md-3">
+            <input type="submit" value="Ajouter" class="btn btn-primary form-control" />
+        </div>
+        <div class="col-6 col-md-3">
+            <a asp-action="GetAllEvents" class="btn btn-outline-secondary form-control">Annuler</a>
+        </div>
+    </div>
+    
+</form>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
