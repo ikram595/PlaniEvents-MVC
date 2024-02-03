@@ -237,6 +237,10 @@ namespace PlaniEvents123.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EventId"), 1L, 1);
 
+                    b.Property<string>("Categorie")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
@@ -256,6 +260,10 @@ namespace PlaniEvents123.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("TagsInput")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Temps")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -263,6 +271,29 @@ namespace PlaniEvents123.Data.Migrations
                     b.HasKey("EventId");
 
                     b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("PlaniEvents123.Models.Tag", b =>
+                {
+                    b.Property<int>("TagId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TagId"), 1L, 1);
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NomTag")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("TagId");
+
+                    b.HasIndex("EventId");
+
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -323,9 +354,20 @@ namespace PlaniEvents123.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("PlaniEvents123.Models.Tag", b =>
+                {
+                    b.HasOne("PlaniEvents123.Models.Event", null)
+                        .WithMany("Tags")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("PlaniEvents123.Models.Event", b =>
                 {
                     b.Navigation("Participants");
+
+                    b.Navigation("Tags");
                 });
 #pragma warning restore 612, 618
         }

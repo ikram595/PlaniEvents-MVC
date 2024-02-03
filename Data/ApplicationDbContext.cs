@@ -8,11 +8,24 @@ namespace PlaniEvents123.Data
     {
         //table Events
         public DbSet<Event> Events { get; set; }
-       
+        public DbSet<Tag> Tags { get; set; }
+
+
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
-       
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Event>()
+            .HasMany(e => e.Tags)
+            .WithOne()
+            .HasForeignKey(t => t.EventId)
+            .OnDelete(DeleteBehavior.Cascade);
+        }
+
     }
 }

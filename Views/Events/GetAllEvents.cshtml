@@ -29,10 +29,22 @@
                     <h6 class="card-subtitle mb-2 text-body-secondary text-secondary">
                         <i class="bi bi-clock text-secondary"></i> @item.Temps
                         </h6>
-
+                    <h6 class="card-subtitle mb-2 text-body-secondary text-secondary">
+                        <i class="bi bi-bookmarks"></i>@item.Categorie
+                    </h6>
                     <p class="card-text description">@item.Description</p>
-
-                        <p class="card-text"><i class="bi bi-geo-alt"></i> @item.Lieu</p>
+                    <p class="card-text"><i class="bi bi-geo-alt"></i> @item.Lieu</p>
+                    <div class="m-2">
+                  
+                        @foreach (var tag in item.Tags)
+                        {
+                            @if (!string.IsNullOrEmpty(tag.NomTag))
+                            {
+                                    <a href="@Url.Action("EventsByTag", new { tag = tag.NomTag })" class="badge rounded-pill bg-info">@tag.NomTag</a>
+                            }
+                        }
+                    
+                    </div>
                     @if (User.IsInRole("Admin") || User.IsInRole("Organizateur"))
                     {
                         <button type="button" class="btn btn-primary" asp-action="Edit" onclick="location.href='@Url.Action("Edit", new { id = item.EventId })'"><i class="bi bi-pencil-square"></i></button>
@@ -55,7 +67,7 @@
 <style>
     .description {
         display: -webkit-box;
-        -webkit-line-clamp: 4; /* Number of lines to show */
+        -webkit-line-clamp: 4; /* nb lignes apparus */
         -webkit-box-orient: vertical;
         overflow: hidden;
         text-overflow: ellipsis " [..]";

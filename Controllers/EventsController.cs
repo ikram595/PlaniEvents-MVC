@@ -26,9 +26,16 @@ namespace PlaniEvents123.Controllers
         
         public IActionResult GetAllEvents()
         {
-            var events = _context.Events.ToList();
+            var events = _context.Events.Include(e => e.Tags).ToList();//assurer que la liste des tag est chargée
             return View(events);
         }
+        // filtre par "tag", affichere tous les evennements ayant le même tag
+        public IActionResult EventsByTag(string tag)
+        {
+            var events = _context.Events.Where(e => e.Tags.Any(t => t.NomTag == tag)).ToList();
+            return View("GetAllEvents", events);
+        }
+
         // GET: Events/Create
 
         [Authorize(Roles = "Admin,Organizateur")]
@@ -41,18 +48,39 @@ namespace PlaniEvents123.Controllers
         // POST: Events/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Nom,Description,Jour,Temps,Lieu")] Event @event)
+        public async Task<IActionResult> Create([Bind("Nom,Description,Jour,Temps,Lieu,Categorie,TagsInput")] Event @event)
         {// Set the organizer's email
-            
+
             if (ModelState.IsValid)
             {
+                // Process tags and add to the event
+                if (!string.IsNullOrEmpty(@event.TagsInput))
+                {
+                    var tags = @event.TagsInput.Split(',');
+                    foreach (var tag in tags)
+                    {
+                        // Trim the tag and add '#' if not present
+                        string cleanedTag = tag.Trim();
+                        if (!cleanedTag.StartsWith("#"))
+                        {
+                            cleanedTag = "#" + cleanedTag;
+                        }
+                        @event.Tags.Add(new Tag { NomTag = cleanedTag });
+                    }
+                }
 
-                    _context.Add(@event);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(GetAllEvents));
-               
+
+                Console.WriteLine("Modele valide");
+                _context.Add(@event);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(GetAllEvents));
             }
-            
+            else { Console.WriteLine("Modele invalide"); }
+
+
+
+
+
             return View(@event);
         }
         // GET: Events/Details/5
@@ -64,7 +92,7 @@ namespace PlaniEvents123.Controllers
                 return NotFound();
             }
 
-            var @event = await _context.Events.Include(e => e.Participants).FirstOrDefaultAsync(e => e.EventId == id);
+            var @event = await _context.Events.Include(e => e.Participants).Include(e => e.Tags).FirstOrDefaultAsync(e => e.EventId == id);
 
             if (@event == null)
             {
@@ -95,7 +123,7 @@ namespace PlaniEvents123.Controllers
         // POST: Events/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("EventId,Nom,Description,Jour,Temps,Lieu")] Event @event)
+        public async Task<IActionResult> Edit(int id, [Bind("EventId,Nom,Description,Jour,Temps,Lieu,Categorie,TagsInput")] Event @event)
         {
             if (id != @event.EventId)
             {
@@ -105,7 +133,8 @@ namespace PlaniEvents123.Controllers
             if (ModelState.IsValid)
             {
                 try
-                {
+                {  // Update the tags based on TagsInput
+                    UpdateTags(@event);
                     _context.Update(@event);
                     await _context.SaveChangesAsync();
                 }
@@ -123,6 +152,23 @@ namespace PlaniEvents123.Controllers
                 return RedirectToAction(nameof(GetAllEvents));
             }
             return View(@event);
+
+        }
+        //maj tags
+        private void UpdateTags(Event @event)
+        {
+            // Clear existing tags
+            @event.Tags.Clear();
+
+            if (!string.IsNullOrEmpty(@event.TagsInput))
+            {
+                var tags = @event.TagsInput.Split(',');
+                foreach (var tag in tags)
+                {
+                    string cleanedTag = tag.TrimStart('#').Trim();
+                    @event.Tags.Add(new Tag { NomTag = cleanedTag });
+                }
+            }
         }
         // GET: Events/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -149,6 +195,7 @@ namespace PlaniEvents123.Controllers
         {
             if (_context.Events == null)
             {
+
                 return Problem("Entity set 'ApplicationDbContext.Events' is null.");
             }
 
